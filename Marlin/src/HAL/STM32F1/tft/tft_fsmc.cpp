@@ -22,7 +22,7 @@
 
 #include "../../../inc/MarlinConfig.h"
 
-#if HAS_FSMC_TFT || ENABLED(TFT_LVGL_UI_FSMC)
+#if HAS_FSMC_TFT
 
 #include "tft_fsmc.h"
 #include <libmaple/fsmc.h>
@@ -224,15 +224,13 @@ void TFT_FSMC::Abort() {
 }
 
 void TFT_FSMC::TransmitDMA(uint32_t MemoryIncrease, uint16_t *Data, uint16_t Count) {
-  #if defined(FSMC_DMA_DEV) && defined(FSMC_DMA_CHANNEL)
-    dma_setup_transfer(FSMC_DMA_DEV, FSMC_DMA_CHANNEL, Data, DMA_SIZE_16BITS, &LCD->RAM, DMA_SIZE_16BITS, DMA_MEM_2_MEM | MemoryIncrease);
-    dma_set_num_transfers(FSMC_DMA_DEV, FSMC_DMA_CHANNEL, Count);
-    dma_clear_isr_bits(FSMC_DMA_DEV, FSMC_DMA_CHANNEL);
-    dma_enable(FSMC_DMA_DEV, FSMC_DMA_CHANNEL);
+  dma_setup_transfer(FSMC_DMA_DEV, FSMC_DMA_CHANNEL, Data, DMA_SIZE_16BITS, &LCD->RAM, DMA_SIZE_16BITS, DMA_MEM_2_MEM | MemoryIncrease);
+  dma_set_num_transfers(FSMC_DMA_DEV, FSMC_DMA_CHANNEL, Count);
+  dma_clear_isr_bits(FSMC_DMA_DEV, FSMC_DMA_CHANNEL);
+  dma_enable(FSMC_DMA_DEV, FSMC_DMA_CHANNEL);
 
-    while ((dma_get_isr_bits(FSMC_DMA_DEV, FSMC_DMA_CHANNEL) & 0x0A) == 0) {};
-    dma_disable(FSMC_DMA_DEV, FSMC_DMA_CHANNEL);
-  #endif
+  while ((dma_get_isr_bits(FSMC_DMA_DEV, FSMC_DMA_CHANNEL) & 0x0A) == 0) {};
+  dma_disable(FSMC_DMA_DEV, FSMC_DMA_CHANNEL);
 }
 
 #endif // HAS_FSMC_TFT

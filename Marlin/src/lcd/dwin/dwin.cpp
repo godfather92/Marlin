@@ -935,8 +935,7 @@ void Goto_PrintProcess(void) {
 
   // Copy into filebuf string before entry
   char * const name = card.longest_filename();
-  const int8_t npos = _MAX(0, DWIN_WIDTH - strlen(name) * MENU_CHR_W) / 2;
-  DWIN_Draw_String(false, false, font8x16, White, Background_black, npos, 60, name);
+  DWIN_Draw_String(false, false, font8x16, White, Background_black, (DWIN_WIDTH - strlen(name) * MENU_CHR_W) / 2, 60, name);
 
   DWIN_ICON_Show(ICON, ICON_PrintTime, 17, 193);
   DWIN_ICON_Show(ICON, ICON_RemainTime, 150, 191);
@@ -1524,7 +1523,7 @@ inline void make_name_without_ext(char *dst, char *src, int maxlen=MENU_CHAR_LIM
   if (!card.flag.filenameIsDir)
     while (pos && src[pos] != '.') pos--; // find last '.' (stop at 0)
 
-  size_t len = pos;   // nul or '.'
+  int len = pos;      // nul or '.'
   if (len > maxlen) { // Keep the name short
     pos        = len = maxlen; // move nul down
     dst[--pos] = '.'; // insert dots
@@ -3437,8 +3436,7 @@ void EachMomentUpdate(void) {
         Popup_Window_Resume();
         draw_first_option(false);
         char * const name = card.longest_filename();
-        const int8_t npos = _MAX(0, DWIN_WIDTH - strlen(name) * (MENU_CHR_W)) / 2;
-        DWIN_Draw_String(false, true, font8x16, Font_window, Background_window, npos, 252, name);
+        DWIN_Draw_String(false, true, font8x16, Font_window, Background_window, (DWIN_WIDTH - strlen(name) * MENU_CHR_W) / 2, 252, name);
         DWIN_UpdateLCD();
         break;
       }
