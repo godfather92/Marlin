@@ -52,11 +52,11 @@
 
 #include <SPI.h>
 
-#ifndef LCD_FULL_PIXEL_WIDTH
-  #define LCD_FULL_PIXEL_WIDTH  480
+#ifndef TFT_WIDTH
+  #define TFT_WIDTH  480
 #endif
-#ifndef LCD_FULL_PIXEL_HEIGHT
-  #define LCD_FULL_PIXEL_HEIGHT 320
+#ifndef TFT_HEIGHT
+  #define TFT_HEIGHT 320
 #endif
 
 #if HAS_SPI_FLASH_FONT
@@ -136,7 +136,7 @@ void LCD_WriteRAM_Prepare(void) {
 
 void tft_set_point(uint16_t x, uint16_t y, uint16_t point) {
   //if (DeviceCode == 0x9488) {
-  if (x > (LCD_FULL_PIXEL_WIDTH) || y > (LCD_FULL_PIXEL_HEIGHT)) return;
+  if (x > (TFT_WIDTH) || y > (TFT_HEIGHT)) return;
   //}
   tft_set_cursor(x, y);
 
@@ -197,8 +197,8 @@ void ili9320_SetWindows(uint16_t StartX, uint16_t StartY, uint16_t width, uint16
      LCD_WriteReg(0x0053, yEnd);*/
     LCD_WriteReg(0x0050, StartY);   // Specify the start/end positions of the window address in the horizontal direction by an address unit
     LCD_WriteReg(0x0051, yEnd);     // Specify the start positions of the window address in the vertical direction by an address unit
-    LCD_WriteReg(0x0052, 320 - xEnd);
-    LCD_WriteReg(0x0053, 320 - StartX - 1); // Specify the end positions of the window address in the vertical direction by an address unit
+    LCD_WriteReg(0x0052, (TFT_HEIGHT) - xEnd);
+    LCD_WriteReg(0x0053, (TFT_HEIGHT) - StartX - 1); // Specify the end positions of the window address in the vertical direction by an address unit
 
   }
   else {
@@ -232,16 +232,16 @@ void LCD_Clear(uint16_t Color) {
 
   if (DeviceCode == 0x9488) {
     tft_set_cursor(0, 0);
-    ili9320_SetWindows(0, 0, LCD_FULL_PIXEL_WIDTH, LCD_FULL_PIXEL_HEIGHT);
+    ili9320_SetWindows(0, 0, TFT_WIDTH, TFT_HEIGHT);
     LCD_WriteRAM_Prepare();
     #ifdef LCD_USE_DMA_FSMC
-      LCD_IO_WriteMultiple(Color, (LCD_FULL_PIXEL_WIDTH) * (LCD_FULL_PIXEL_HEIGHT));
+      LCD_IO_WriteMultiple(Color, (TFT_WIDTH) * (TFT_HEIGHT));
     #else
-      //index = (LCD_FULL_PIXEL_HEIGHT) / 2 * (LCD_FULL_PIXEL_WIDTH);
-      for (index = 0; index < (LCD_FULL_PIXEL_HEIGHT) * (LCD_FULL_PIXEL_WIDTH); index++)
+      //index = (TFT_HEIGHT) / 2 * (TFT_WIDTH);
+      for (index = 0; index < (TFT_HEIGHT) * (TFT_WIDTH); index++)
         LCD_IO_WriteData(Color);
     #endif
-    //LCD_IO_WriteMultiple(Color, (LCD_FULL_PIXEL_WIDTH) * (LCD_FULL_PIXEL_HEIGHT));
+    //LCD_IO_WriteMultiple(Color, (TFT_WIDTH) * (TFT_HEIGHT));
     //while(index --) LCD_IO_WriteData(Color);
   }
   else if (DeviceCode == 0x5761) {
@@ -400,7 +400,7 @@ void init_tft() {
     for (i = 0; i < 65535; i++);
     LCD_IO_WriteReg(0x0029);
 
-    ili9320_SetWindows(0, 0, LCD_FULL_PIXEL_WIDTH, LCD_FULL_PIXEL_HEIGHT);
+    ili9320_SetWindows(0, 0, TFT_WIDTH, TFT_HEIGHT);
     LCD_Clear(0x0000);
 
     OUT_WRITE(LCD_BACKLIGHT_PIN, HIGH);
@@ -620,22 +620,9 @@ unsigned int getTickDiff(unsigned int curTick, unsigned int lastTick) {
 
 #endif
 
-static void xpt2046_corr(uint16_t *x, uint16_t *y) {
-  #if XPT2046_XY_SWAP
-    int16_t swap_tmp;
-    swap_tmp = *x;
-    *x = *y;
-    *y = swap_tmp;
-  #endif
-  if ((*x) > XPT2046_X_MIN) (*x) -= XPT2046_X_MIN; else (*x) = 0;
-  if ((*y) > XPT2046_Y_MIN) (*y) -= XPT2046_Y_MIN; else (*y) = 0;
-  (*x) = uint32_t(uint32_t(*x) * XPT2046_HOR_RES) / (XPT2046_X_MAX - XPT2046_X_MIN);
-  (*y) = uint32_t(uint32_t(*y) * XPT2046_VER_RES) / (XPT2046_Y_MAX - XPT2046_Y_MIN);
-  #if XPT2046_X_INV
-    (*x) = XPT2046_HOR_RES - (*x);
-  #endif
-  #if XPT2046_Y_INV
-    (*y) = XPT2046_VER_RES - (*y);
+  #if ENABLED(GRAPHICAL_TFT_ROTATE_180)
+    x = (TFT_WIDTH) - x;
+    y = (TFT_HEIGHT) - y;
   #endif
 }
 

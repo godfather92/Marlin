@@ -33,25 +33,6 @@
 
 TFT SPI_TFT;
 
-#ifndef SPI_TFT_MISO_PIN
-  #define SPI_TFT_MISO_PIN PA6
-#endif
-#ifndef SPI_TFT_MOSI_PIN
-  #define SPI_TFT_MOSI_PIN PA7
-#endif
-#ifndef SPI_TFT_SCK_PIN
-  #define SPI_TFT_SCK_PIN  PA5
-#endif
-#ifndef SPI_TFT_CS_PIN
-  #define SPI_TFT_CS_PIN   PD11
-#endif
-#ifndef SPI_TFT_DC_PIN
-  #define SPI_TFT_DC_PIN   PD10
-#endif
-#ifndef SPI_TFT_RST_PIN
-  #define SPI_TFT_RST_PIN  PC6
-#endif
-
 // use SPI1 for the spi tft.
 void TFT::spi_init(uint8_t spiRate) {
 
@@ -174,11 +155,11 @@ void TFT::SetWindows(uint16_t x, uint16_t y, uint16_t with, uint16_t height) {
 }
 
 void TFT::LCD_init() {
-  SPI_TFT_RST_H;
+  TFT_RST_H;
   delay(150);
-  SPI_TFT_RST_L;
+  TFT_RST_L;
   delay(150);
-  SPI_TFT_RST_H;
+  TFT_RST_H;
 
   delay(120);
   LCD_WR_REG(0x11);
@@ -253,86 +234,23 @@ void TFT::LCD_init() {
 
   LCD_clear(0x0000);    //
   LCD_Draw_Logo();
-  SPI_TFT_BLK_H;
+  TFT_BLK_H;
   delay(2000);
 }
 
 void TFT::LCD_clear(uint16_t color) {
-  unsigned int i;
-  uint8_t tbuf[960];
-
-  SetCursor(0, 0);
-  SetWindows(0, 0, 480 - 1, 320 - 1);
-  LCD_WriteRAM_Prepare();
-  SPI_TFT_CS_L;
-  SPI_TFT_DC_H;
-  for (i = 0; i < 960;) {
-    tbuf[i]     = color >> 8;
-    tbuf[i + 1] = color;
-    i += 2;
-  }
-  for (i = 0; i < 320; i++) {
-    // for (m=0;m<480;m++)
-    // {
-    // LCD_WR_DATA(color>>8);
-    // LCD_WR_DATA(color);
-    SPI.dmaSend(tbuf, 960, true);
-    // SPI_TFT_CS_H;
-    // }
-  }
-  SPI_TFT_CS_H;
+  SetWindows(0, 0, (TFT_WIDTH) - 1, (TFT_HEIGHT) - 1);
+  tftio.WriteMultiple(color, (uint32_t)(TFT_WIDTH) * (TFT_HEIGHT));
 }
 
 extern unsigned char bmp_public_buf[17 * 1024];
 
 void TFT::LCD_Draw_Logo() {
-  uint16_t i,y_off = 0;
-  uint16_t *p_index;
-  uint16_t Color;
-
-  #if 1
-    for (y_off = 0; y_off < 320; y_off ++) {
-      Pic_Logo_Read((uint8_t *)"", (uint8_t *)bmp_public_buf, 960);
-
-      SPI_TFT.spi_init(SPI_FULL_SPEED);
-      SetWindows(0, y_off, 480, 1);
-      LCD_WriteRAM_Prepare(); /* Prepare to write GRAM */
-      for (i = 0; i < 960;) {
-        p_index = (uint16_t *)(&bmp_public_buf[i]);
-        Color = (*p_index >> 8);
-        *p_index = Color | ((*p_index & 0xFF) << 8);
-        i+=2;
-      }
-      SPI_TFT_CS_L;
-      SPI_TFT_DC_H;
-      SPI.dmaSend(bmp_public_buf,960,true);
-      SPI_TFT_CS_H;
-    }
-
-  #else
-
-    for (index = 0; index < 40; index ++) {
-      Pic_Logo_Read((uint8_t *)"", bmp_public_buf, 480*8*2);
-      i = 0;
-      SetCursor(0,0);
-      SetWindows(0, y_off * 8, 480, 8);
-      LCD_WriteRAM_Prepare(); /* Prepare to write GRAM */
-      for (i = 0; i < 480 * 8 * 2;) {
-        p_index = (uint16_t *)(&bmp_public_buf[i]);
-        Color = (*p_index >> 8);
-        *p_index = Color | ((*p_index & 0xFF) << 8);
-        i += 2;
-      }
-      SPI_TFT_CS_L;
-      SPI_TFT_DC_H;
-      SPI.dmaSend(bmp_public_buf,480*8*2,true);
-      SPI_TFT_CS_H;
-
-      y_off++;
-    }
-  #endif
-
-  SetWindows(0, 0, 479, 319);
+  SetWindows(0, 0, TFT_WIDTH, TFT_HEIGHT);
+  for (uint16_t i = 0; i < (TFT_HEIGHT); i ++) {
+    Pic_Logo_Read((uint8_t *)"", (uint8_t *)bmp_public_buf, (TFT_WIDTH) * 2);
+    tftio.WriteSequence((uint16_t *)bmp_public_buf, TFT_WIDTH);
+  }
 }
 
 #endif // HAS_TFT_LVGL_UI_SPI
