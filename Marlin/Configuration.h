@@ -831,7 +831,7 @@
  *
  * See https://github.com/synthetos/TinyG/wiki/Jerk-Controlled-Motion-Explained
  */
-#define S_CURVE_ACCELERATION  //rado
+//#define S_CURVE_ACCELERATION  //rado
 
 //===========================================================================
 //============================= Z Probe Options =============================
