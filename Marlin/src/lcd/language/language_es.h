@@ -26,6 +26,7 @@
  *
  * LCD Menu Messages
  * See also https://marlinfw.org/docs/development/lcd_language.html
+ *
  */
 
 namespace Language_es {

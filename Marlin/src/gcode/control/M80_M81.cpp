@@ -22,9 +22,8 @@
 
 #include "../gcode.h"
 #include "../../module/temperature.h"
-#include "../../module/planner.h"       // for planner.finish_and_disable
-#include "../../module/printcounter.h"  // for print_job_timer.stop
-#include "../../lcd/marlinui.h"         // for LCD_MESSAGEPGM_P
+#include "../../module/stepper.h"
+#include "../../module/printcounter.h" // for print_job_timer
 
 #include "../../inc/MarlinConfig.h"
 

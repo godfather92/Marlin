@@ -27,7 +27,7 @@
  * Supports 4 stepper drivers, heated bed, single hotend.
  */
 
-#if NOT_TARGET(ARDUINO_ARCH_ESP32)
+#ifndef ARDUINO_ARCH_ESP32
   #error "Oops! Select an ESP32 board in 'Tools > Board.'"
 #elif EXTRUDERS > 1 || E_STEPPERS > 1
   #error "MRR ESPA only supports one E Stepper. Comment out this line to continue."
@@ -42,10 +42,12 @@
 //
 // Disable I2S stepper stream
 //
-#undef I2S_STEPPER_STREAM
-#undef I2S_WS
-#undef I2S_BCK
-#undef I2S_DATA
+#ifdef I2S_STEPPER_STREAM
+  #undef I2S_STEPPER_STREAM
+#endif
+#define I2S_WS                                -1
+#define I2S_BCK                               -1
+#define I2S_DATA                              -1
 
 //
 // Limit Switches

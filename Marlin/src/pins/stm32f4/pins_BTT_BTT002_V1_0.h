@@ -21,7 +21,7 @@
  */
 #pragma once
 
-#if NOT_TARGET(STM32F4)
+#ifndef STM32F4
   #error "Oops! Select an STM32F4 board in 'Tools > Board.'"
 #elif HOTENDS > 1 || E_STEPPERS > 1
   #error "BIGTREE BTT002 V1.0 supports up to 1 hotends / E-steppers."
@@ -187,22 +187,21 @@
 #define SDSS                                PA4
 
 /**
- * -------------------------------------BTT002 V1.0--------------------------------------------
- *               -----                                             -----                      |
+ * -------------------------------------BTT002 V1.0-----------------------------------------------
+ *               _____                                             _____                      |
  *          PA3 | · · | GND                                    5V | · · | GND                 |
  *       NRESET | · · | PC4(SD_DET)                 (LCD_D7) PE13 | · · | PE12  (LCD_D6)      |
  *   (MOSI)PA7  | · · | PB0(BTN_EN2)                (LCD_D5) PE11 | · · | PE10  (LCD_D4)      |
  *  (SD_SS)PA4  | · · | PC5(BTN_EN1)                (LCD_RS) PE8  | · · | PE9   (LCD_EN)      |
  *    (SCK)PA5  | · · | PA6(MISO)                  (BTN_ENC) PB1  | · · | PE7   (BEEPER)      |
- *               -----                                             -----                      |
+ *               ￣￣                                               ￣￣                       |
  *               EXP2                                              EXP1                       |
- * --------------------------------------------------------------------------------------------
+ * ---------------------------------------------------------------------------------------------
  */
-
 //
 // LCDs and Controllers
 //
-#if HAS_WIRED_LCD
+#if HAS_SPI_LCD
   #define BEEPER_PIN                        PE7
   #define BTN_ENC                           PB1
 
@@ -228,7 +227,7 @@
     #define LCD_PINS_ENABLE                 PE9
     #define LCD_PINS_D4                     PE10
 
-    #if IS_ULTIPANEL
+    #if ENABLED(ULTIPANEL)
       #define LCD_PINS_D5                   PE11
       #define LCD_PINS_D6                   PE12
       #define LCD_PINS_D7                   PE13
@@ -237,7 +236,7 @@
   #endif
 
   // Alter timing for graphical display
-  #if HAS_MARLINUI_U8GLIB
+  #if HAS_GRAPHICAL_LCD
     #ifndef BOARD_ST7920_DELAY_1
       #define BOARD_ST7920_DELAY_1 DELAY_NS(96)
     #endif
@@ -249,7 +248,7 @@
     #endif
   #endif
 
-#endif // HAS_WIRED_LCD
+#endif // HAS_SPI_LCD
 
 //
 // RGB LEDs

@@ -11,6 +11,7 @@
  * any later version.  The code is distributed WITHOUT ANY WARRANTY;
  * without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU GPL for more details.
+ *
  */
 
 /**
@@ -46,7 +47,7 @@
 
 #include "status_screen_lite_ST7920.h"
 
-#include "../marlinui.h"
+#include "../ultralcd.h"
 #include "../fontutils.h"
 #include "../lcdprint.h"
 #include "../../libs/duration_t.h"

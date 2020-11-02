@@ -96,7 +96,7 @@
 //
 // LCD / Controller
 //
-#if IS_ULTRA_LCD && IS_NEWPANEL
+#if BOTH(ULTRA_LCD, NEWPANEL)
   #undef BEEPER_PIN
 
   #undef LCD_PINS_RS

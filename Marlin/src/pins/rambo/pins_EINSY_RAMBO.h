@@ -25,7 +25,7 @@
  * Einsy-Rambo pin assignments
  */
 
-#if NOT_TARGET(__AVR_ATmega2560__)
+#ifndef __AVR_ATmega2560__
   #error "Oops! Select 'Arduino Mega 2560 or Rambo' in 'Tools > Board.'"
 #endif
 
@@ -160,11 +160,11 @@
 //
 // LCD / Controller
 //
-#if HAS_WIRED_LCD || TOUCH_UI_ULTIPANEL
+#if HAS_SPI_LCD || TOUCH_UI_ULTIPANEL
 
   #define KILL_PIN                            32
 
-  #if IS_ULTIPANEL || TOUCH_UI_ULTIPANEL
+  #if ENABLED(ULTIPANEL) || TOUCH_UI_ULTIPANEL
 
     #if ENABLED(CR10_STOCKDISPLAY)
       #define LCD_PINS_RS                     85
@@ -187,5 +187,5 @@
     #define BEEPER_PIN                        84  // AUX-4
     #define SD_DETECT_PIN                     15
 
-  #endif // IS_ULTIPANEL || TOUCH_UI_ULTIPANEL
-#endif // HAS_WIRED_LCD
+  #endif // ULTIPANEL || TOUCH_UI_ULTIPANEL
+#endif // HAS_SPI_LCD

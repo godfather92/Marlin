@@ -25,7 +25,7 @@
  * PRINTRBOARD_G2
  */
 
-#if NOT_TARGET(__SAM3X8E__)
+#ifndef __SAM3X8E__
   #error "Oops! Select 'Arduino Due' in 'Tools > Board.'"
 #endif
 
@@ -170,4 +170,5 @@
  * None of these are in the arduino_due_x variant so digitalWrite and digitalRead can't be used on them.
  *
  * They can be accessed via FASTIO functions WRITE, READ, OUT_WRITE, OUTPUT, ...
+ *
  */

@@ -25,7 +25,7 @@
  * MKS Robin Lite 3 (STM32F103RCT6) board pin assignments
  */
 
-#if NOT_TARGET(__STM32F1__)
+#ifndef __STM32F1__
   #error "Oops! Select an STM32F1 board in 'Tools > Board.'"
 #elif HOTENDS > 2 || E_STEPPERS > 2
   #error "MKS Robin Lite3 supports up to 2 hotends / E-steppers. Comment out this line to continue."
@@ -38,6 +38,7 @@
 
 //#define DISABLE_DEBUG
 #define DISABLE_JTAG
+#define ENABLE_SPI2
 
 //
 // Servos
@@ -86,16 +87,16 @@
 //
 // Temperature Sensors
 //
-#define TEMP_BED_PIN                        PA1   // TB
-#define TEMP_0_PIN                          PA0   // TH1
-#define TEMP_1_PIN                          PA2   // TH2
+#define TEMP_BED_PIN                        PA1   //TB
+#define TEMP_0_PIN                          PA0   //TH1
+#define TEMP_1_PIN                          PA2   //TH2
 
 #define FIL_RUNOUT_PIN                      PB10  // MT_DET
 
 //
 // LCD Pins
 //
-#if HAS_WIRED_LCD
+#if HAS_SPI_LCD
 
   #define BEEPER_PIN                        PC1
   #define BTN_ENC                           PC3
@@ -114,16 +115,10 @@
     #define DOGLCD_SCK                      PB13
     #define DOGLCD_MOSI                     PB15
 
-  #elif IS_TFTGLCD_PANEL
-
-    #if ENABLED(TFTGLCD_PANEL_SPI)
-      #define TFTGLCD_CS                    PB11
-    #endif
-
   #else                                           // !MKS_MINI_12864
 
     #define LCD_PINS_D4                     PA6
-    #if IS_ULTIPANEL
+    #if ENABLED(ULTIPANEL)
       #define LCD_PINS_D5                   PA7
       #define LCD_PINS_D6                   PC4
       #define LCD_PINS_D7                   PC5
@@ -131,22 +126,24 @@
 
   #endif // !MKS_MINI_12864
 
-  #define BOARD_ST7920_DELAY_1     DELAY_NS(125)
-  #define BOARD_ST7920_DELAY_2     DELAY_NS(125)
-  #define BOARD_ST7920_DELAY_3     DELAY_NS(125)
-
-#endif // HAS_WIRED_LCD
+#endif // HAS_SPI_LCD
 
 //
 // SD Card
 //
+#define ENABLE_SPI2
 #define SD_DETECT_PIN                       PC10
-
-//
-// SPI
-//
-#define SPI_DEVICE                             2
 #define SCK_PIN                             PB13
 #define MISO_PIN                            PB14
 #define MOSI_PIN                            PB15
 #define SS_PIN                              PA15
+
+#ifndef BOARD_ST7920_DELAY_1
+  #define BOARD_ST7920_DELAY_1     DELAY_NS(125)
+#endif
+#ifndef BOARD_ST7920_DELAY_2
+  #define BOARD_ST7920_DELAY_2     DELAY_NS(125)
+#endif
+#ifndef BOARD_ST7920_DELAY_3
+  #define BOARD_ST7920_DELAY_3     DELAY_NS(125)
+#endif

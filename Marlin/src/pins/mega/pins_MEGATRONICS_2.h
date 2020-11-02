@@ -25,7 +25,7 @@
  * MegaTronics v2.0 pin assignments
  */
 
-#if NOT_TARGET(__AVR_ATmega2560__)
+#ifndef __AVR_ATmega2560__
   #error "Oops! Select 'Arduino/Genuino Mega or Mega 2560' in 'Tools > Board.'"
 #endif
 
@@ -130,7 +130,7 @@
 //
 #define BEEPER_PIN                            64
 
-#if HAS_WIRED_LCD
+#if HAS_SPI_LCD
 
   #define LCD_PINS_RS                         14
   #define LCD_PINS_ENABLE                     15
@@ -139,7 +139,7 @@
   #define LCD_PINS_D6                         32
   #define LCD_PINS_D7                         33
 
-  #if IS_NEWPANEL
+  #if ENABLED(NEWPANEL)
     // Buttons are directly attached using keypad
     #define BTN_EN1                           61
     #define BTN_EN2                           59
@@ -152,4 +152,4 @@
     #define SHIFT_EN                          17
   #endif
 
-#endif // HAS_WIRED_LCD
+#endif // HAS_SPI_LCD

@@ -26,7 +26,7 @@
  * Schematic: https://github.com/chepo92/Smartto/blob/master/circuit_diagram/Rostock301/Hardware_GTM32_PRO_VB.pdf
  */
 
-#if NOT_TARGET(__STM32F1__)
+#ifndef __STM32F1__
   #error "Oops! Select an STM32F1 board in 'Tools > Board.'"
 #endif
 
@@ -135,9 +135,9 @@
 //
 // LCD / Controller
 //
-#if HAS_WIRED_LCD
+#if HAS_SPI_LCD
 
-  #if IS_RRD_SC
+  #if ENABLED(REPRAP_DISCOUNT_SMART_CONTROLLER)
     //
     // LCD display on J2 FFC40
     // Geeetech's LCD2004A Control Panel is very much like
@@ -166,7 +166,7 @@
     //#define LCD_UART_RX                   PD9
   #endif
 
-  #if HAS_MARLINUI_U8GLIB
+  #if HAS_GRAPHICAL_LCD
     #ifndef BOARD_ST7920_DELAY_1
       #define BOARD_ST7920_DELAY_1 DELAY_NS(96)
     #endif
@@ -178,7 +178,7 @@
     #endif
   #endif
 
-#endif // HAS_WIRED_LCD
+#endif // HAS_SPI_LCD
 
 //
 // Beeper

@@ -32,9 +32,7 @@
 
 #include "pins_BTT_SKR_MINI_E3_common.h"
 
-#ifndef BOARD_INFO_NAME
-  #define BOARD_INFO_NAME "BTT SKR Mini E3 V2.0"
-#endif
+#define BOARD_INFO_NAME "BTT SKR Mini E3 V2.0"
 
 // Release PA13/PA14 (led, usb control) from SWD pins
 #define DISABLE_DEBUG
@@ -54,8 +52,8 @@
  * Hardware serial communication ports.
  */
 #if HAS_TMC_UART
-  #define X_HARDWARE_SERIAL  MSerial4
-  #define Y_HARDWARE_SERIAL  MSerial4
-  #define Z_HARDWARE_SERIAL  MSerial4
-  #define E0_HARDWARE_SERIAL MSerial4
+  #define X_HARDWARE_SERIAL  Serial4
+  #define Y_HARDWARE_SERIAL  Serial4
+  #define Z_HARDWARE_SERIAL  Serial4
+  #define E0_HARDWARE_SERIAL Serial4
 #endif

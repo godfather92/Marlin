@@ -23,10 +23,6 @@
 
 #include "../inc/MarlinConfig.h"
 
-#if HAS_ETHERNET
-  #include "../feature/ethernet.h"
-#endif
-
 /**
  * Define debug bit-masks
  */
@@ -60,9 +56,8 @@ extern uint8_t marlin_debug_flags;
     #define SERIAL_OUT(WHAT, V...) (void)CAT(MYSERIAL,SERIAL_CATCHALL).WHAT(V)
   #else
     #define SERIAL_OUT(WHAT, V...) do{ \
-      const bool port2_open = TERN1(HAS_ETHERNET, ethernet.have_telnet_client); \
-      if ( serial_port_index == 0 || serial_port_index == SERIAL_BOTH)                (void)MYSERIAL0.WHAT(V); \
-      if ((serial_port_index == 1 || serial_port_index == SERIAL_BOTH) && port2_open) (void)MYSERIAL1.WHAT(V); \
+      if (!serial_port_index || serial_port_index == SERIAL_BOTH) (void)MYSERIAL0.WHAT(V); \
+      if ( serial_port_index) (void)MYSERIAL1.WHAT(V); \
     }while(0)
   #endif
 

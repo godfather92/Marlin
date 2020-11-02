@@ -25,7 +25,7 @@
  * HJC2560-C Rev2.x pin assignments
  */
 
-#if NOT_TARGET(__AVR_ATmega2560__)
+#ifndef __AVR_ATmega2560__
   #error "Oops! Select 'Arduino/Genuino Mega or Mega 2560' in 'Tools > Board.'"
 #endif
 
@@ -123,11 +123,11 @@
 //
 // LCD / Controller
 //
-#if HAS_WIRED_LCD
+#if HAS_SPI_LCD
 
   #define BEEPER_PIN                          18
 
-  #if IS_NEWPANEL
+  #if ENABLED(NEWPANEL)
 
     #define LCD_PINS_RS                       20  // LCD_CS
     #define LCD_PINS_ENABLE                   15  // LCD_SDA
@@ -168,6 +168,6 @@
     #define LCD_PINS_D6                       20
     #define LCD_PINS_D7                       19
 
-  #endif // !IS_NEWPANEL
+  #endif // !NEWPANEL
 
-#endif // HAS_WIRED_LCD
+#endif // HAS_SPI_LCD

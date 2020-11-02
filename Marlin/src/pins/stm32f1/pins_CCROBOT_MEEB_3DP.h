@@ -21,7 +21,7 @@
  */
 #pragma once
 
-#if NOT_TARGET(TARGET_STM32F1)
+#ifndef TARGET_STM32F1
   #error "Oops! Select an STM32F1 board in 'Tools > Board.'"
 #elif HOTENDS > 1 || E_STEPPERS > 1
   #error "CCROBOT-ONLINE MEEB_3DP only supports 1 hotend / E-stepper. Comment out this line to continue."
@@ -142,7 +142,7 @@
 #endif
 
 // Alter timing for graphical display
-#if HAS_MARLINUI_U8GLIB
+#if HAS_GRAPHICAL_LCD
   #ifndef BOARD_ST7920_DELAY_1
     #define BOARD_ST7920_DELAY_1 DELAY_NS(125)
   #endif
@@ -165,6 +165,7 @@
 // SD-NAND
 //
 #if SD_CONNECTION_IS(ONBOARD)
+  #define ENABLE_SPI1
   #define SD_DETECT_PIN                     -1
   #define SCK_PIN                           PA5
   #define MISO_PIN                          PA6
@@ -172,7 +173,7 @@
   #define SS_PIN                            PA4
 #endif
 
-#define ONBOARD_SPI_DEVICE                     1  // SPI1
+#define ON_BOARD_SPI_DEVICE                    1  // SPI1
 #define ONBOARD_SD_CS_PIN                   PA4   // Chip select for SD-NAND
 
 #endif

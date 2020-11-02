@@ -27,8 +27,6 @@
 #include "../../../../inc/MarlinConfig.h"
 #include "SPIFlashStorage.h"
 
-extern W25QXXFlash W25QXX;
-
 uint8_t SPIFlashStorage::m_pageData[SPI_FLASH_PageSize];
 uint32_t SPIFlashStorage::m_currentPage;
 uint16_t SPIFlashStorage::m_pageDataUsed;
@@ -183,9 +181,10 @@ void SPIFlashStorage::loadPage(uint8_t* buffer) {
 
   // Test env
   // char fname[256];
+  // memset(buffer, 0, SPI_FLASH_PageSize);
   // snprintf(fname, sizeof(fname), "./pages/page-%03d.data", m_currentPage);
   // FILE *fp = fopen(fname, "rb");
-  // if (fp) {
+  // if (fp != NULL) {
   //     fread(buffer, 1, SPI_FLASH_PageSize, fp);
   //     fclose(fp);
   // }
@@ -222,7 +221,7 @@ void SPIFlashStorage::flushPage() {
   #if HAS_SPI_FLASH_COMPRESSION
     // Restart the compressed buffer, keep the pointers of the uncompressed buffer
     m_compressedDataUsed = 0;
-  #else
+  #elif
     m_pageDataUsed = 0;
   #endif
   m_currentPage++;

@@ -21,7 +21,7 @@
  */
 #pragma once
 
-#include "../../lcd/marlinui.h"
+#include "../../lcd/ultralcd.h"
 
 class Password {
 public:
@@ -31,10 +31,10 @@ public:
   Password() { is_locked = false; }
 
   static void lock_machine();
-  static void authentication_check();
 
   #if HAS_LCD_MENU
     static void access_menu_password();
+    static void authentication_check();
     static void authentication_done();
     static void media_gatekeeper();
 

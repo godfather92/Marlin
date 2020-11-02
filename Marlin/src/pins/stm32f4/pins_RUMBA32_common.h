@@ -23,9 +23,10 @@
 
 /**
  * Common pin assignments for all RUMBA32 boards
+ *
  */
 
-#if NOT_TARGET(STM32F4)
+#ifndef STM32F4
   #error "Oops! Select an STM32F4 board in 'Tools > Board.'"
 #elif HOTENDS > 3 || E_STEPPERS > 3
   #error "RUMBA32 boards support up to 3 hotends / E-steppers."
@@ -47,6 +48,7 @@
 
 #define STEP_TIMER 10
 #define TEMP_TIMER 14
+#define HAL_TIMER_RATE                     F_CPU
 
 //
 // Limit Switches
@@ -145,7 +147,7 @@
 //
 // LCD / Controller
 //
-#if HAS_WIRED_LCD
+#if HAS_SPI_LCD
 
   #define BTN_EN1                           PB2
   #define BTN_EN2                           PB1
@@ -160,14 +162,14 @@
     #define DOGLCD_A0                       PE14
   #endif
 
-  #if IS_ULTIPANEL
+  #if ENABLED(ULTIPANEL)
     #define LCD_PINS_D5                     PE13
     #define LCD_PINS_D6                     PE14
     #define LCD_PINS_D7                     PE15
   #endif
 
   // Alter timing for graphical display
-  #if HAS_MARLINUI_U8GLIB
+  #if HAS_GRAPHICAL_LCD
     #ifndef BOARD_ST7920_DELAY_1
       #define BOARD_ST7920_DELAY_1 DELAY_NS(96)
     #endif

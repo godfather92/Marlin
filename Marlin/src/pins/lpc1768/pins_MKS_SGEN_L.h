@@ -25,7 +25,7 @@
  * MKS SGEN-L pin assignments
  */
 
-#if NOT_TARGET(MCU_LPC1768)
+#ifndef MCU_LPC1768
   #error "Oops! Make sure you have the LPC1768 environment selected in your IDE."
 #endif
 
@@ -153,7 +153,7 @@
    * Hardware serial communication ports.
    * If undefined software serial is used according to the pins below
    */
-  //#define X_HARDWARE_SERIAL  Serial1
+  //#define X_HARDWARE_SERIAL  Serial
   //#define X2_HARDWARE_SERIAL Serial1
   //#define Y_HARDWARE_SERIAL  Serial1
   //#define Y2_HARDWARE_SERIAL Serial1
@@ -235,8 +235,7 @@
  *                -----                                            -----
  *                EXP1                                             EXP2
  */
-#if HAS_WIRED_LCD
-
+#if HAS_SPI_LCD
   #define BEEPER_PIN                       P1_31
   #define BTN_ENC                          P1_30
 
@@ -248,68 +247,6 @@
 
     #define LCD_PINS_ENABLE                P1_22
     #define LCD_PINS_D4                    P0_17
-
-  #elif HAS_SPI_TFT                               // Config for Classic UI (emulated DOGM) and Color UI
-    #define TFT_CS_PIN                     P1_00
-    #define TFT_A0_PIN                     P1_22
-    #define TFT_DC_PIN                     P1_22
-    #define TFT_MISO_PIN                   P0_08
-    #define TFT_BACKLIGHT_PIN              P0_18
-    #define TFT_RESET_PIN                  P0_16
-
-    #define LCD_USE_DMA_SPI
-
-    #define TOUCH_INT_PIN                  P0_17
-    #define TOUCH_CS_PIN                   P0_15
-    #define TOUCH_BUTTONS_HW_SPI
-    #define TOUCH_BUTTONS_HW_SPI_DEVICE        2
-
-    // Disable any LCD related PINs config
-    #define LCD_PINS_ENABLE                -1
-    #define LCD_PINS_RS                    -1
-
-    // XPT2046 Touch Screen calibration
-    #if ENABLED(TFT_CLASSIC_UI)
-      #ifndef XPT2046_X_CALIBRATION
-        #define XPT2046_X_CALIBRATION     -11386
-      #endif
-      #ifndef XPT2046_Y_CALIBRATION
-        #define XPT2046_Y_CALIBRATION       8684
-      #endif
-      #ifndef XPT2046_X_OFFSET
-        #define XPT2046_X_OFFSET             689
-      #endif
-      #ifndef XPT2046_Y_OFFSET
-        #define XPT2046_Y_OFFSET            -273
-      #endif
-    #elif ENABLED(TFT_COLOR_UI)
-      #ifndef XPT2046_X_CALIBRATION
-        #define XPT2046_X_CALIBRATION     -16741
-      #endif
-      #ifndef XPT2046_Y_CALIBRATION
-        #define XPT2046_Y_CALIBRATION      11258
-      #endif
-      #ifndef XPT2046_X_OFFSET
-        #define XPT2046_X_OFFSET            1024
-      #endif
-      #ifndef XPT2046_Y_OFFSET
-        #define XPT2046_Y_OFFSET            -367
-      #endif
-
-      #define TFT_BUFFER_SIZE               2400
-    #endif
-
-    #define BTN_EN1                        P3_25
-    #define BTN_EN2                        P3_26
-
-  #elif IS_TFTGLCD_PANEL
-
-    #undef BEEPER_PIN
-    #undef BTN_ENC
-
-    #if ENABLED(TFTGLCD_PANEL_SPI)
-      #define TFTGLCD_CS                   P3_25
-    #endif
 
   #else
 
@@ -372,7 +309,7 @@
           #define DOGLCD_A0                P1_00
         #endif
 
-        #if IS_ULTIPANEL
+        #if ENABLED(ULTIPANEL)
           #define LCD_PINS_D5              P0_17
           #define LCD_PINS_D6              P1_00
           #define LCD_PINS_D7              P1_22
@@ -384,7 +321,7 @@
 
   #endif // !CR10_STOCKDISPLAY
 
-#endif // HAS_WIRED_LCD
+#endif // HAS_SPI_LCD
 
 #ifndef SDCARD_CONNECTION
   #define SDCARD_CONNECTION              ONBOARD

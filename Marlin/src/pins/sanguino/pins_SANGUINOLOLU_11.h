@@ -31,6 +31,7 @@
  * 1) added pointer to a current Arduino IDE extension
  * 2) added support for M3, M4 & M5 spindle control commands
  * 3) added case light pin definition
+ *
  */
 
 /**
@@ -48,9 +49,10 @@
  * Just use the above JSON URL instead of Sparkfun's JSON.
  *
  * Once installed select the Sanguino board and then select the CPU.
+ *
  */
 
-#if NOT_TARGET(__AVR_ATmega644P__, __AVR_ATmega1284P__)
+#if !defined(__AVR_ATmega644P__) && !defined(__AVR_ATmega1284P__)
   #error "Oops! Select 'Sanguino' in 'Tools > Boards' and 'ATmega644P' or 'ATmega1284P' in 'Tools > Processor.'"
 #endif
 
@@ -136,7 +138,7 @@
   #define LCD_BACKLIGHT_PIN                   17  // LCD backlight LED
 #endif
 
-#if NONE(SPINDLE_FEATURE, LASER_FEATURE) && ENABLED(SANGUINOLOLU_V_1_2) && !BOTH(IS_ULTRA_LCD, IS_NEWPANEL) // try to use IO Header
+#if NONE(SPINDLE_FEATURE, LASER_FEATURE) && ENABLED(SANGUINOLOLU_V_1_2) && !BOTH(ULTRA_LCD, NEWPANEL)// try to use IO Header
   #define CASE_LIGHT_PIN                       4  // Hardware PWM  - see if IO Header is available
 #endif
 
@@ -152,11 +154,11 @@
 //
 // LCD / Controller
 //
-#if HAS_WIRED_LCD
+#if HAS_SPI_LCD
 
   #define SD_DETECT_PIN                       -1
 
-  #if HAS_MARLINUI_U8GLIB
+  #if HAS_GRAPHICAL_LCD
 
     #if ENABLED(LCD_FOR_MELZI)
 
@@ -185,7 +187,7 @@
         // with M42 instead of BEEPER_PIN.
         #define BEEPER_PIN                    27
 
-        #if IS_RRD_FG_SC
+        #if ENABLED(REPRAP_DISCOUNT_FULL_GRAPHIC_SMART_CONTROLLER)
           #ifndef BOARD_ST7920_DELAY_1
             #define BOARD_ST7920_DELAY_1 DELAY_NS(0)
           #endif
@@ -283,18 +285,18 @@
 
   #endif
 
-  #if IS_NEWPANEL && !defined(BTN_EN1)
+  #if ENABLED(NEWPANEL) && !defined(BTN_EN1)
     #define BTN_EN1                           11
     #define BTN_EN2                           10
   #endif
 
-#endif // HAS_WIRED_LCD
+#endif // HAS_SPI_LCD
 
 //
 // M3/M4/M5 - Spindle/Laser Control
 //
 #if HAS_CUTTER
-  #if !MB(AZTEEG_X1) && ENABLED(SANGUINOLOLU_V_1_2) && !BOTH(IS_ULTRA_LCD, IS_NEWPANEL) // try to use IO Header
+  #if !MB(AZTEEG_X1) && ENABLED(SANGUINOLOLU_V_1_2) && !BOTH(ULTRA_LCD, NEWPANEL)// try to use IO Header
 
     #define SPINDLE_LASER_ENA_PIN             10  // Pullup or pulldown!
     #define SPINDLE_LASER_PWM_PIN              4  // Hardware PWM
