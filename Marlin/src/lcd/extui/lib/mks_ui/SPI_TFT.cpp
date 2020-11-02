@@ -22,14 +22,17 @@
 
 #include "../../../../inc/MarlinConfigPre.h"
 
-#if ENABLED(TFT_LVGL_UI_SPI)
+#if HAS_TFT_LVGL_UI
 
 #include "SPI_TFT.h"
 #include "pic_manager.h"
+#include "tft_lvgl_configuration.h"
 
 #include "../../../../inc/MarlinConfig.h"
 
 #include <SPI.h>
+
+#include "draw_ui.h"
 
 TFT SPI_TFT;
 
@@ -60,197 +63,48 @@ void TFT::spi_init(uint8_t spiRate) {
   SPI.setDataMode(SPI_MODE0);
 }
 
-uint8_t TFT::spi_Rec() {
-  uint8_t returnByte = SPI.transfer(ff);
-  return returnByte;
-}
-
-uint8_t TFT::spi_read_write_byte(uint8_t data) {
-  uint8_t returnByte = SPI.transfer(data);
-  return returnByte;
-}
-
-/**
- * @brief  Receive a number of bytes from the SPI port to a buffer
- *
- * @param  buf   Pointer to starting address of buffer to write to.
- * @param  nbyte Number of bytes to receive.
- * @return Nothing
- *
- * @details Uses DMA
- */
-void TFT::spi_Read(uint8_t* buf, uint16_t nbyte) {SPI.dmaTransfer(0, const_cast<uint8_t*>(buf), nbyte);}
-
-/**
- * @brief  Send a single byte on SPI port
- *
- * @param  b Byte to send
- *
- * @details
- */
-void TFT::spi_Send(uint8_t b) {SPI.send(b);}
-
-/**
- * @brief  Write token and then write from 512 byte buffer to SPI (for SD card)
- *
- * @param  buf   Pointer with buffer start address
- * @return Nothing
- *
- * @details Use DMA
- */
-void TFT::spi_SendBlock(uint8_t token, const uint8_t* buf) {
-  SPI.send(token);
-  SPI.dmaSend(const_cast<uint8_t*>(buf), 512);
-}
-
-void TFT::LCD_WR_REG(uint8_t cmd) {
-  SPI_TFT_CS_L;
-  SPI_TFT_DC_L;
-  spi_Send(cmd);
-  SPI_TFT_CS_H;
-}
-void TFT::LCD_WR_DATA(uint8_t data) {
-  SPI_TFT_CS_L;
-  SPI_TFT_DC_H;
-  spi_Send(data);
-  SPI_TFT_CS_H;
-}
-void TFT::LCD_WriteRAM_Prepare() {LCD_WR_REG(0X2C);}
-void TFT::SetCursor(uint16_t x, uint16_t y) {
-  LCD_WR_REG(0x2A);
-  LCD_WR_DATA(x >> 8);
-  LCD_WR_DATA(x);
-  LCD_WR_DATA(x >> 8);
-  LCD_WR_DATA(x);
-
-  LCD_WR_REG(0x2B);
-  LCD_WR_DATA(y >> 8);
-  LCD_WR_DATA(y);
-  LCD_WR_DATA(y >> 8);
-  LCD_WR_DATA(y);
-}
-
 void TFT::SetPoint(uint16_t x, uint16_t y, uint16_t point) {
   if ((x > 480) || (y > 320)) return;
 
-  SetCursor(x, y);
-
-  LCD_WriteRAM_Prepare();
-  LCD_WR_DATA((uint8_t)(point >> 8));
-  LCD_WR_DATA((uint8_t)point);
+  setWindow(x, y, 1, 1);
+  tftio.WriteMultiple(point, (uint16_t)1);
 }
 
-void TFT::SetWindows(uint16_t x, uint16_t y, uint16_t with, uint16_t height) {
-  LCD_WR_REG(0x2A);
-  LCD_WR_DATA(x >> 8);
-  LCD_WR_DATA(x);
-  LCD_WR_DATA((x + with - 1) >> 8);
-  LCD_WR_DATA((x + with - 1));
-
-  LCD_WR_REG(0x2B);
-  LCD_WR_DATA(y >> 8);
-  LCD_WR_DATA(y);
-  LCD_WR_DATA((y + height - 1) >> 8);
-  LCD_WR_DATA(y + height - 1);
+void TFT::setWindow(uint16_t x, uint16_t y, uint16_t with, uint16_t height) {
+  tftio.set_window(x, y, (x + with - 1), (y + height - 1));
 }
 
 void TFT::LCD_init() {
-  TFT_RST_H;
-  delay(150);
-  TFT_RST_L;
-  delay(150);
-  TFT_RST_H;
-
-  delay(120);
-  LCD_WR_REG(0x11);
-  delay(120);
-
-  LCD_WR_REG(0xF0);
-  LCD_WR_DATA(0xC3);
-  LCD_WR_REG(0xF0);
-  LCD_WR_DATA(0x96);
-
-  LCD_WR_REG(0x36);
-  LCD_WR_DATA(0x28);
-
-  LCD_WR_REG(0x3A);
-  LCD_WR_DATA(0x55);
-
-  LCD_WR_REG(0xB4);
-  LCD_WR_DATA(0x01);
-  LCD_WR_REG(0xB7);
-  LCD_WR_DATA(0xC6);
-  LCD_WR_REG(0xE8);
-  LCD_WR_DATA(0x40);
-  LCD_WR_DATA(0x8A);
-  LCD_WR_DATA(0x00);
-  LCD_WR_DATA(0x00);
-  LCD_WR_DATA(0x29);
-  LCD_WR_DATA(0x19);
-  LCD_WR_DATA(0xA5);
-  LCD_WR_DATA(0x33);
-  LCD_WR_REG(0xC1);
-  LCD_WR_DATA(0x06);
-  LCD_WR_REG(0xC2);
-  LCD_WR_DATA(0xA7);
-  LCD_WR_REG(0xC5);
-  LCD_WR_DATA(0x18);
-  LCD_WR_REG(0xE0);     // Positive Voltage Gamma Control
-  LCD_WR_DATA(0xF0);
-  LCD_WR_DATA(0x09);
-  LCD_WR_DATA(0x0B);
-  LCD_WR_DATA(0x06);
-  LCD_WR_DATA(0x04);
-  LCD_WR_DATA(0x15);
-  LCD_WR_DATA(0x2F);
-  LCD_WR_DATA(0x54);
-  LCD_WR_DATA(0x42);
-  LCD_WR_DATA(0x3C);
-  LCD_WR_DATA(0x17);
-  LCD_WR_DATA(0x14);
-  LCD_WR_DATA(0x18);
-  LCD_WR_DATA(0x1B);
-  LCD_WR_REG(0xE1);     // Negative Voltage Gamma Control
-  LCD_WR_DATA(0xF0);
-  LCD_WR_DATA(0x09);
-  LCD_WR_DATA(0x0B);
-  LCD_WR_DATA(0x06);
-  LCD_WR_DATA(0x04);
-  LCD_WR_DATA(0x03);
-  LCD_WR_DATA(0x2D);
-  LCD_WR_DATA(0x43);
-  LCD_WR_DATA(0x42);
-  LCD_WR_DATA(0x3B);
-  LCD_WR_DATA(0x16);
-  LCD_WR_DATA(0x14);
-  LCD_WR_DATA(0x17);
-  LCD_WR_DATA(0x1B);
-  LCD_WR_REG(0xF0);
-  LCD_WR_DATA(0x3C);
-  LCD_WR_REG(0xF0);
-  LCD_WR_DATA(0x69);
-  delay(120);     // Delay 120ms
-  LCD_WR_REG(0x29);     // Display ON
-
-  LCD_clear(0x0000);    //
+  tftio.InitTFT();
+  #if PIN_EXISTS(TFT_BACKLIGHT)
+    OUT_WRITE(TFT_BACKLIGHT_PIN, LOW);
+  #endif
+  delay(100);
+  LCD_clear(0x0000);
   LCD_Draw_Logo();
-  TFT_BLK_H;
-  delay(2000);
+  #if PIN_EXISTS(TFT_BACKLIGHT)
+    OUT_WRITE(TFT_BACKLIGHT_PIN, HIGH);
+  #endif
+  #if HAS_LOGO_IN_FLASH
+    delay(2000);
+  #endif
 }
 
 void TFT::LCD_clear(uint16_t color) {
-  SetWindows(0, 0, (TFT_WIDTH) - 1, (TFT_HEIGHT) - 1);
+  setWindow(0, 0, (TFT_WIDTH), (TFT_HEIGHT));
   tftio.WriteMultiple(color, (uint32_t)(TFT_WIDTH) * (TFT_HEIGHT));
 }
 
 extern unsigned char bmp_public_buf[17 * 1024];
 
 void TFT::LCD_Draw_Logo() {
-  SetWindows(0, 0, TFT_WIDTH, TFT_HEIGHT);
-  for (uint16_t i = 0; i < (TFT_HEIGHT); i ++) {
-    Pic_Logo_Read((uint8_t *)"", (uint8_t *)bmp_public_buf, (TFT_WIDTH) * 2);
-    tftio.WriteSequence((uint16_t *)bmp_public_buf, TFT_WIDTH);
-  }
+  #if HAS_LOGO_IN_FLASH
+    setWindow(0, 0, TFT_WIDTH, TFT_HEIGHT);
+    for (uint16_t i = 0; i < (TFT_HEIGHT); i ++) {
+      Pic_Logo_Read((uint8_t *)"", (uint8_t *)bmp_public_buf, (TFT_WIDTH) * 2);
+      tftio.WriteSequence((uint16_t *)bmp_public_buf, TFT_WIDTH);
+    }
+  #endif
 }
 
-#endif // HAS_TFT_LVGL_UI_SPI
+#endif // HAS_TFT_LVGL_UI
