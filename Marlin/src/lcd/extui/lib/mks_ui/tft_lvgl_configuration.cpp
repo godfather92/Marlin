@@ -51,6 +51,11 @@ XPT2046 touch;
   #include "../../../../feature/powerloss.h"
 #endif
 
+#if ENABLED(TOUCH_SCREEN_CALIBRATION)
+  #include "../../../tft_io/touch_calibration.h"
+  #include "draw_touch_calibration.h"
+#endif
+
 #include <SPI.h>
 
 #ifndef TFT_WIDTH
@@ -211,7 +216,14 @@ void tft_lvgl_init() {
     }
   #endif
 
-  if (ready) lv_draw_ready_print();
+  if (ready) {
+    #if ENABLED(TOUCH_SCREEN_CALIBRATION)
+      if (touch_calibration.need_calibration()) lv_draw_touch_calibration_screen();
+      else lv_draw_ready_print();
+    #else
+      lv_draw_ready_print();
+    #endif
+  }
 
   if (mks_test_flag == 0x1E)
     mks_gpio_test();
@@ -239,71 +251,19 @@ unsigned int getTickDiff(unsigned int curTick, unsigned int lastTick) {
 
 #if ENABLED(TFT_LVGL_UI_SPI)
 
-  #ifndef USE_XPT2046
-    #define USE_XPT2046       1
-    #define XPT2046_XY_SWAP   1
-    #define XPT2046_X_INV     1
-    #define XPT2046_Y_INV     0
-  #endif
+  if (!is_touched) return false;
 
-  #if USE_XPT2046
-    #define XPT2046_HOR_RES 480
-    #define XPT2046_VER_RES 320
-    #define XPT2046_X_MIN   201
-    #define XPT2046_Y_MIN   164
-    #define XPT2046_X_MAX  3919
-    #define XPT2046_Y_MAX  3776
-    #define XPT2046_AVG       4
-    #define XPT2046_INV       1
-  #endif
-
-#else
-
-  #ifndef USE_XPT2046
-    #define USE_XPT2046       1
-    #ifndef XPT2046_XY_SWAP
-      #define XPT2046_XY_SWAP 1
-    #endif
-    #ifndef XPT2046_X_INV
-      #define XPT2046_X_INV   0
-    #endif
-    #ifndef XPT2046_Y_INV
-      #define XPT2046_Y_INV   1
-    #endif
-  #endif
-
-  #if USE_XPT2046
-    #ifndef XPT2046_HOR_RES
-      #define XPT2046_HOR_RES 480
-    #endif
-    #ifndef XPT2046_VER_RES
-      #define XPT2046_VER_RES 320
-    #endif
-    #ifndef XPT2046_X_MIN
-      #define XPT2046_X_MIN   201
-    #endif
-    #ifndef XPT2046_Y_MIN
-      #define XPT2046_Y_MIN   164
-    #endif
-    #ifndef XPT2046_X_MAX
-      #define XPT2046_X_MAX  3919
-    #endif
-    #ifndef XPT2046_Y_MAX
-      #define XPT2046_Y_MAX  3776
-    #endif
-    #ifndef XPT2046_AVG
-      #define XPT2046_AVG       4
-    #endif
-    #ifndef XPT2046_INV
-      #define XPT2046_INV       0
-    #endif
-  #endif
-
-#endif
-
-  #if (TFT_ROTATION & TFT_ROTATE_180)
-    *x = int16_t((TFT_WIDTH) - (int)(*x));
-    *y = int16_t((TFT_HEIGHT) - (int)(*y));
+  #if ENABLED(TOUCH_SCREEN_CALIBRATION)
+    const calibrationState state = touch_calibration.get_calibration_state();
+    if (state >= CALIBRATION_TOP_LEFT && state <= CALIBRATION_BOTTOM_RIGHT) {
+      if (touch_calibration.handleTouch(*x, *y)) lv_update_touch_calibration_screen();
+      return false;
+    }
+    *x = int16_t((int32_t(*x) * touch_calibration.calibration.x) >> 16) + touch_calibration.calibration.offset_x;
+    *y = int16_t((int32_t(*y) * touch_calibration.calibration.y) >> 16) + touch_calibration.calibration.offset_y;
+  #else
+    *x = int16_t((int32_t(*x) * TOUCH_CALIBRATION_X) >> 16) + TOUCH_OFFSET_X;
+    *y = int16_t((int32_t(*y) * TOUCH_CALIBRATION_Y) >> 16) + TOUCH_OFFSET_Y;
   #endif
 }
 
@@ -377,7 +337,7 @@ void XPT2046_Rd_Addata(uint16_t *X_Addata, uint16_t *Y_Addata) {
     return;
   }
 
-  *Y_Addata = (y_addata[times / 2 - 1] + y_addata[times / 2]) / 2;
+  return true;
 }
 
 bool my_touchpad_read(lv_indev_drv_t * indev_driver, lv_indev_data_t * data) {

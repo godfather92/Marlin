@@ -103,7 +103,7 @@ void GcodeSuite::M81() {
   #if HAS_SUICIDE
     suicide();
   #elif ENABLED(PSU_CONTROL)
-    PSU_OFF();
+    PSU_OFF_SOON();
   #endif
 
   #if HAS_LCD_MENU
