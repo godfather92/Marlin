@@ -2313,7 +2313,7 @@
     #define Z_MICROSTEPS     16
     #define Z_RSENSE          0.11
     #define Z_CHAIN_POS      -1
-    //#define Z_INTERPOLATE  true
+    #define Z_INTERPOLATE  false
   #endif
 
   #if AXIS_IS_TMC(Z2)
@@ -2322,7 +2322,7 @@
     #define Z2_MICROSTEPS    16
     #define Z2_RSENSE         0.11
     #define Z2_CHAIN_POS     -1
-    //#define Z2_INTERPOLATE true
+    #define Z2_INTERPOLATE false
   #endif
 
   #if AXIS_IS_TMC(Z3)
