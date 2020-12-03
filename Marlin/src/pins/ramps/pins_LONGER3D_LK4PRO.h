@@ -4,7 +4,6 @@
  *
  * Based on Sprinter and grbl.
  * Copyright (c) 2011 Camiel Gubbels / Erik van der Zalm
- * Copyright (c) 2017 Victor Perez
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,32 +19,20 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *
  */
-#if defined(STM32GENERIC) && (defined(STM32F4) || defined(STM32F7))
+#pragma once
 
-#include "../../inc/MarlinConfig.h"
+// Longer UI assumptions
+#if HOTENDS > 1 || E_STEPPERS > 1
+  #error "Longer UI supports only 1 hotend / E-stepper."
+#endif
 
-#if HAS_SERVOS
+#define BOARD_INFO_NAME "LGT Kit 1.0"
 
-#include "Servo.h"
+#define SD_DETECT_PIN                         49
+#define FIL_RUNOUT_PIN                         2
+#define Z_MIN_PIN                             35
 
-int8_t libServo::attach(const int pin) {
-  if (servoIndex >= MAX_SERVOS) return -1;
-  return super::attach(pin);
-}
-
-int8_t libServo::attach(const int pin, const int min, const int max) {
-  return super::attach(pin, min, max);
-}
-
-void libServo::move(const int value) {
-  constexpr uint16_t servo_delay[] = SERVO_DELAY;
-  static_assert(COUNT(servo_delay) == NUM_SERVOS, "SERVO_DELAY must be an array NUM_SERVOS long.");
-  if (attach(0) >= 0) {
-    write(value);
-    safe_delay(servo_delay[servoIndex]);
-    TERN_(DEACTIVATE_SERVOS_AFTER_MOVE, detach());
-  }
-}
-
-#endif // HAS_SERVOS
-#endif // STM32GENERIC && (STM32F4 || STM32F7)
+//
+// Import RAMPS 1.4 pins
+//
+#include "pins_RAMPS.h"

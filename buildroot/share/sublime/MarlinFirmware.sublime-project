@@ -20,7 +20,8 @@
 				"Marlin/.gitignore",
 				"Marlin/*/platformio.ini",
 				"Marlin/*/.travis.yml",
-				"Marlin/*/.gitignore"
+				"Marlin/*/.gitignore",
+				"*.d"
 			],
 			"path": "../../.."
 		}
