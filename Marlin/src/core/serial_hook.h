@@ -21,6 +21,7 @@
  */
 #pragma once
 
+#include "macros.h"
 #include "serial_base.h"
 
 // The most basic serial class: it dispatch to the base serial class with no hook whatsoever. This will compile to nothing but the base serial class
@@ -37,6 +38,8 @@ struct BaseSerial : public SerialBase< BaseSerial<SerialT> >, public SerialT {
   bool available(uint8_t index) { return index == 0 && SerialT::available(); }
   int read(uint8_t index)       { return index == 0 ? SerialT::read() : -1; }
   bool connected()              { return CALL_IF_EXISTS(bool, static_cast<SerialT*>(this), connected);; }
+  void flushTX()                { CALL_IF_EXISTS(void, static_cast<SerialT*>(this), flushTX); }
+
   // We have 2 implementation of the same method in both base class, let's say which one we want
   using SerialT::available;
   using SerialT::read;
@@ -61,13 +64,14 @@ struct ConditionalSerial : public SerialBase< ConditionalSerial<SerialT> > {
 
   bool    & condition;
   SerialT & out;
-  size_t write(uint8_t c) { if (condition) return out.write(c); return 0; }
+  NO_INLINE size_t write(uint8_t c) { if (condition) return out.write(c); return 0; }
   void flush()            { if (condition) out.flush();  }
   void begin(long br)     { out.begin(br); }
   void end()              { out.end(); }
 
   void msgDone() {}
   bool connected()              { return CALL_IF_EXISTS(bool, &out, connected); }
+  void flushTX()                { CALL_IF_EXISTS(void, &out, flushTX); }
 
   bool available(uint8_t index) { return index == 0 && out.available(); }
   int read(uint8_t index)       { return index == 0 ? out.read() : -1; }
@@ -83,7 +87,7 @@ struct ForwardSerial : public SerialBase< ForwardSerial<SerialT> > {
   typedef SerialBase< ForwardSerial<SerialT> > BaseClassT;
 
   SerialT & out;
-  size_t write(uint8_t c) { return out.write(c); }
+  NO_INLINE size_t write(uint8_t c) { return out.write(c); }
   void flush()            { out.flush();  }
   void begin(long br)     { out.begin(br); }
   void end()              { out.end(); }
@@ -91,6 +95,7 @@ struct ForwardSerial : public SerialBase< ForwardSerial<SerialT> > {
   void msgDone() {}
   // Existing instances implement Arduino's operator bool, so use that if it's available
   bool connected()              { return Private::HasMember_connected<SerialT>::value ? CALL_IF_EXISTS(bool, &out, connected) : (bool)out; }
+  void flushTX()                { CALL_IF_EXISTS(void, &out, flushTX); }
 
   bool available(uint8_t index) { return index == 0 && out.available(); }
   int read(uint8_t index)       { return index == 0 ? out.read() : -1; }
@@ -111,12 +116,12 @@ struct RuntimeSerial : public SerialBase< RuntimeSerial<SerialT> >, public Seria
   EndOfMessageHook eofHook;
   void *           userPointer;
 
-  size_t write(uint8_t c) {
+  NO_INLINE size_t write(uint8_t c) {
     if (writeHook) writeHook(userPointer, c);
     return SerialT::write(c);
   }
 
-  void msgDone() {
+  NO_INLINE void msgDone() {
     if (eofHook) eofHook(userPointer);
   }
 
@@ -130,7 +135,12 @@ struct RuntimeSerial : public SerialBase< RuntimeSerial<SerialT> >, public Seria
 
   using BaseClassT::print;
   using BaseClassT::println;
-  
+
+  // Underlying implementation might use Arduino's bool operator
+  bool connected() {
+    return Private::HasMember_connected<SerialT>::value ? CALL_IF_EXISTS(bool, static_cast<SerialT*>(this), connected) : static_cast<SerialT*>(this)->operator bool();
+  }
+  void flushTX()                { CALL_IF_EXISTS(void, static_cast<SerialT*>(this), flushTX); }
 
   void setHook(WriteHook writeHook = 0, EndOfMessageHook eofHook = 0, void * userPointer = 0) {
     // Order is important here as serial code can be called inside interrupts
@@ -165,13 +175,13 @@ struct MultiSerial : public SerialBase< MultiSerial<Serial0T, Serial1T, offset> 
     AllMask           = FirstOutputMask | SecondOutputMask,
   };
 
-  size_t write(uint8_t c) {
+  NO_INLINE size_t write(uint8_t c) {
     size_t ret = 0;
     if (portMask & FirstOutputMask)   ret = serial0.write(c);
     if (portMask & SecondOutputMask)  ret = serial1.write(c) | ret;
     return ret;
   }
-  void msgDone() {
+  NO_INLINE void msgDone() {
     if (portMask & FirstOutputMask)   serial0.msgDone();
     if (portMask & SecondOutputMask)  serial1.msgDone();
   }
@@ -182,7 +192,7 @@ struct MultiSerial : public SerialBase< MultiSerial<Serial0T, Serial1T, offset> 
       default: return false;
     }
   }
-  int read(uint8_t index) {
+  NO_INLINE int read(uint8_t index) {
     switch(index) {
       case 0 + offset: return serial0.read();
       case 1 + offset: return serial1.read();
@@ -208,11 +218,11 @@ struct MultiSerial : public SerialBase< MultiSerial<Serial0T, Serial1T, offset> 
   using BaseClassT::read;
 
   // Redirect flush
-  void flush()      {
+  NO_INLINE void flush()      {
     if (portMask & FirstOutputMask)   serial0.flush();
     if (portMask & SecondOutputMask)  serial1.flush();
   }
-  void flushTX()    {
+  NO_INLINE void flushTX()    {
     if (portMask & FirstOutputMask)   CALL_IF_EXISTS(void, &serial0, flushTX);
     if (portMask & SecondOutputMask)  CALL_IF_EXISTS(void, &serial1, flushTX);
   }
