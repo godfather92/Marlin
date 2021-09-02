@@ -599,9 +599,9 @@
     #define DEFAULT_Ki_LIST {   1.08,   1.08 }
     #define DEFAULT_Kd_LIST { 114.00, 114.00 }
   #else
-    #define DEFAULT_Kp   13.0380 //5.95 Dice24V BANG_MAX 220
-    #define DEFAULT_Ki   0.9314  //0.50
-    #define DEFAULT_Kd   45.6297 //17.61
+    #define DEFAULT_Kp   16.67 //5.95 Dice24V BANG_MAX 220
+    #define DEFAULT_Ki   1.77  //0.50
+    #define DEFAULT_Kd   39.25 //17.61
   #endif
 #endif // PIDTEMP
 
