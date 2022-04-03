@@ -2444,7 +2444,7 @@
 //
 // Ender-2 OEM display, a variant of the MKS_MINI_12864
 //
-//#define ENDER2_STOCKDISPLAY
+//#define ENDER2_STOCKDISPLAY //eKo
 
 //
 // ANET and Tronxy Graphical Controller
