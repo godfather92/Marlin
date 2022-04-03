@@ -102,7 +102,7 @@
   #endif
 #endif
 #ifndef FAN_PIN
-  #define FAN_PIN                          P2_04 //rado
+  #define FAN_PIN                          P2_01 //eKo // P2_04 //rado
 #endif
 #ifndef HEATER_BED_PIN
   #define HEATER_BED_PIN                   P2_05
