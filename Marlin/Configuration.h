@@ -139,11 +139,11 @@
 
 // Choose the name from boards.h that matches your setup
 #ifndef MOTHERBOARD
-  #define MOTHERBOARD BOARD_BTT_SKR_V1_3  //rado
+  #define MOTHERBOARD BOARD_BTT_SKR_E3_TURBO  //eKo
 #endif
 
 // Name displayed in the LCD "Ready" message and Info menu
-#define CUSTOM_MACHINE_NAME "X5S Rado" //rado
+#define CUSTOM_MACHINE_NAME "eKo" //rado
 
 // Printer's unique ID, used by some programs to differentiate between machines.
 // Choose your own or use a service like https://www.uuidgenerator.net/version4
@@ -2342,7 +2342,7 @@
 // RepRapDiscount FULL GRAPHIC Smart Controller
 // https://reprap.org/wiki/RepRapDiscount_Full_Graphic_Smart_Controller
 //
-#define REPRAP_DISCOUNT_FULL_GRAPHIC_SMART_CONTROLLER //rado
+//#define REPRAP_DISCOUNT_FULL_GRAPHIC_SMART_CONTROLLER //eko
 
 //
 // K.3D Full Graphic Smart Controller
@@ -2439,7 +2439,7 @@
 // This is RAMPS-compatible using a single 10-pin connector.
 // (For CR-10 owners who want to replace the Melzi Creality board but retain the display)
 //
-//#define CR10_STOCKDISPLAY
+#define CR10_STOCKDISPLAY         //eKo
 
 //
 // Ender-2 OEM display, a variant of the MKS_MINI_12864
