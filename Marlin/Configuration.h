@@ -485,7 +485,7 @@
  *   999 : Dummy Table that ALWAYS reads 100°C or the temperature defined below.
  *
  */
-#define TEMP_SENSOR_0 5  //DICE Hotend 5 104GT-2 4267K
+#define TEMP_SENSOR_0 13  //DICE Hotend 5 104GT-2 4267K   // eKo
 #define TEMP_SENSOR_1 0
 #define TEMP_SENSOR_2 0
 #define TEMP_SENSOR_3 0
@@ -571,7 +571,7 @@
  * (especially before PID tuning). Setting the target temperature too close to MAXTEMP guarantees
  * a MAXTEMP shutdown! Use these values to forbid temperatures being set too close to MAXTEMP.
  */
-#define HOTEND_OVERSHOOT 15   // (°C) Forbid temperatures over MAXTEMP - OVERSHOOT
+#define HOTEND_OVERSHOOT 50   // (°C) Forbid temperatures over MAXTEMP - OVERSHOOT     //eKo
 #define BED_OVERSHOOT    10   // (°C) Forbid temperatures over MAXTEMP - OVERSHOOT
 #define COOLER_OVERSHOOT  2   // (°C) Forbid temperatures closer than OVERSHOOT
 
@@ -582,7 +582,7 @@
 
 // Comment the following line to disable PID and enable bang-bang.
 #define PIDTEMP
-#define BANG_MAX 255 //220 rado DICE24V     // Limits current to nozzle while in bang-bang mode; 255=full current
+#define BANG_MAX 190 //220 rado DICE24V     // Limits current to nozzle while in bang-bang mode; 255=full current
 #define PID_MAX BANG_MAX // Limits current to nozzle while PID is active (see PID_FUNCTIONAL_RANGE below); 255=full current
 #define PID_K1 0.95      // Smoothing factor within any PID loop
 
@@ -599,9 +599,9 @@
     #define DEFAULT_Ki_LIST {   1.08,   1.08 }
     #define DEFAULT_Kd_LIST { 114.00, 114.00 }
   #else
-    #define DEFAULT_Kp   16.67 //5.95 Dice24V BANG_MAX 220
-    #define DEFAULT_Ki   1.77  //0.50
-    #define DEFAULT_Kd   39.25 //17.61
+    #define DEFAULT_Kp   9.68 //5.95 Dice24V BANG_MAX 220
+    #define DEFAULT_Ki   1.06  //0.50
+    #define DEFAULT_Kd   22.07 //17.61
   #endif
 #endif // PIDTEMP
 
@@ -640,9 +640,9 @@
 
   // 120V 250W silicone heater into 4mm borosilicate (MendelMax 1.5+)
   // from FOPDT model - kp=.39 Tp=405 Tdead=66, Tc set to 79.2, aggressive factor of .15 (vs .1, 1, 10)
-  #define DEFAULT_bedKp 242.66
-  #define DEFAULT_bedKi 26.12
-  #define DEFAULT_bedKd 563.52
+  #define DEFAULT_bedKp 235.75
+  #define DEFAULT_bedKi 46.77
+  #define DEFAULT_bedKd 792.11
 
   // FIND YOUR OWN: "M303 E-1 C8 S90" to run autotune on the bed at 90 degreesC for 8 cycles.
 #endif // PIDTEMPBED
@@ -659,7 +659,7 @@
  * hysteresis.
  *
  * The PID frequency will be the same as the extruder PWM.
- * If PID_dT is the default, and correct for the hardware/configuration, that means 7.689Hz,
+ * If PID_dT is the default, and correct for +the hardware/configuration, that means 7.689Hz,
  * which is fine for driving a square wave into a resistive load and does not significantly
  * impact FET heating. This also works fine on a Fotek SSR-10DA Solid State Relay into a 200W
  * heater. If your configuration is significantly different than this and you don't understand
@@ -716,7 +716,7 @@
  * Note: For Bowden Extruders make this large enough to allow load/unload.
  */
 #define PREVENT_LENGTHY_EXTRUDE
-#define EXTRUDE_MAXLENGTH 700  //rado
+#define EXTRUDE_MAXLENGTH 900  //eKo
 
 //===========================================================================
 //======================== Thermal Runaway Protection =======================
@@ -851,10 +851,10 @@
  */
 #define X_DRIVER_TYPE  TMC2209  //rado
 #define Y_DRIVER_TYPE  TMC2209
-#define Z_DRIVER_TYPE  TMC2208
+#define Z_DRIVER_TYPE  TMC2209
 //#define X2_DRIVER_TYPE A4988
 //#define Y2_DRIVER_TYPE A4988
-#define Z2_DRIVER_TYPE TMC2208
+#define Z2_DRIVER_TYPE TMC2209
 //#define Z3_DRIVER_TYPE A4988
 //#define Z4_DRIVER_TYPE A4988
 //#define I_DRIVER_TYPE  A4988
@@ -915,7 +915,7 @@
  * Override with M92
  *                                      X, Y, Z [, I [, J [, K]]], E0 [, E1[, E2...]]
  */
-#define DEFAULT_AXIS_STEPS_PER_UNIT   { 80.2, 80.2, 400, 138.42 } //rado PLA 131.5, PETG 138.42
+#define DEFAULT_AXIS_STEPS_PER_UNIT   { 80.0, 80.0, 400, 95.66 } //rado PLA 131.5, PETG 138.42
 
 /**
  * Default Max Feed Rate (mm/s)
@@ -1167,7 +1167,7 @@
  *     |    [-]    |
  *     O-- FRONT --+
  */
-#define NOZZLE_TO_PROBE_OFFSET { 0, 40, -1.00 } //rado
+#define NOZZLE_TO_PROBE_OFFSET { 0, 52.80, -1.50 } //eKo
 
 // Most probes should stay away from the edges of the bed, but
 // with NOZZLE_AS_PROBE this can be negative for a wider probing area.
@@ -1310,7 +1310,7 @@
 
 // Invert the stepper direction. Change (or reverse the motor connector) if an axis goes the wrong way.
 #define INVERT_X_DIR false // rado
-#define INVERT_Y_DIR false
+#define INVERT_Y_DIR false  //eKo
 #define INVERT_Z_DIR true
 //#define INVERT_I_DIR false
 //#define INVERT_J_DIR false
@@ -1667,7 +1667,7 @@
 #define LEVEL_BED_CORNERS //rado
 
 #if ENABLED(LEVEL_BED_CORNERS)
-  #define LEVEL_CORNERS_INSET_LFRB { 30, 30, 30, 30 } // (mm) Left, Front, Right, Back insets
+  #define LEVEL_CORNERS_INSET_LFRB { 30, 40, 30, 30 } // (mm) Left, Front, Right, Back insets  //eKo 
   #define LEVEL_CORNERS_HEIGHT      0.0   // (mm) Z height of nozzle at leveling points
   #define LEVEL_CORNERS_Z_HOP       4.0   // (mm) Z height of nozzle between leveling points
   //#define LEVEL_CENTER_TOO              // Move to the center after the last corner
