@@ -231,9 +231,9 @@
 #define HEATER_3_PIN                        PB11  // Heater3
 
 //#define FAN_PIN                             PA8   // Fan0  //eKo
-#define FAN1_PIN                            PE5   // Fan1
-//#define FAN2_PIN                            PD12  // Fan2     //eKo
-//#define FAN3_PIN                            PD13  // Fan3     //eKo
+#define FAN1_PIN                              PD12   // Fan1  //eKo  (Defekt durch Bauteillüfter) (PE5 mit FAN2_PIN getauscht)
+//#define FAN2_PIN                            PD12  // Fan2     //eKo   PD12 
+#define FAN3_PIN                              PD13  // Fan3     //eKo    (Driver_FAN)
 //#define FAN4_PIN                            PD14  // Fan4     //eKo
 //#define FAN5_PIN                            PD15  // Fan5     //eKo
 
